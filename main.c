@@ -15,25 +15,27 @@
 
 static int	check_args(char *arg)
 {
-	size_t	i;
-	int		point_found;
+	int	i;
+	int	point_found;
 
-	point_found = 0;
 	i = 0;
-	if (arg[0] != '-' && !ft_isdigit(arg[0]))
+	point_found = 0;
+	if (!arg || !arg[0])
 		return (0);
-	i++;
-	while (arg[i] != '\0')
+	if (arg[i] == '-' || arg[i] == '+')
+		i++;
+	if (!ft_isdigit(arg[i]))
+		return (0);
+	while (arg[i])
 	{
-		if (!ft_isdigit(arg[i]) && arg[i] != '.')
-			return (0);
 		if (arg[i] == '.')
 		{
-			if (point_found == 0)
-				point_found = 1;
-			else
+			if (point_found || !ft_isdigit(arg[i + 1]))
 				return (0);
+			point_found = 1;
 		}
+		else if (!ft_isdigit(arg[i]))
+			return (0);
 		i++;
 	}
 	return (1);
@@ -41,43 +43,56 @@ static int	check_args(char *arg)
 
 static void	init_julia(t_fractal *fractal, char **av)
 {
-	if (check_args(av[2]) == 1 && check_args(av[3]) == 1)
+	if (!check_args(av[2]) || !check_args(av[3]))
 	{
-		fractal->julia_x = atodbl(av[2]);
-		fractal->julia_y = atodbl(av[3]);
-		if (fractal->julia_x > 1 || fractal->julia_x < -1
-			|| fractal->julia_y > 1 || fractal->julia_y < -1)
-		{
-			putstr_fd("Wrong input: put number between 1 and -1\n", 2);
-			exit(0);
-		}
+		putstr_fd("Error: Julia values must be valid floats.\n", 2);
+		exit(EXIT_FAILURE);
 	}
-	else
+	fractal->julia_x = atodbl(av[2]);
+	fractal->julia_y = atodbl(av[3]);
+	if (fractal->julia_x > 1 || fractal->julia_x < -1
+		|| fractal->julia_y > 1 || fractal->julia_y < -1)
 	{
-		fractal->julia_x = -0.7;
-		fractal->julia_y = 0.27015;
+		putstr_fd("Error: Julia values must be between -1 and 1.\n", 2);
+		exit(EXIT_FAILURE);
 	}
+}
+
+static int	check_fractal_name(char *name)
+{
+	if (!name)
+		return (0);
+	if (ft_strncmp(name, "mandelbrot", 11) == 0)
+		return (1);
+	if (ft_strncmp(name, "julia", 6) == 0)
+		return (2);
+	return (0);
 }
 
 int	main(int ac, char **av)
 {
 	t_fractal	fractal;
+	int			fractal_type;
 
 	fractal.color_shift = 100;
-	if ((ac == 2 && !ft_strncmp(av[1], "mandelbrot", 10))
-		|| (ac == 4 && !ft_strncmp(av[1], "julia", 5)))
+	if (ac < 2 || ac > 4)
+	{
+		putstr_fd(ERROR_MESSAGE, STDERR_FILENO);
+		return (EXIT_FAILURE);
+	}
+	fractal_type = check_fractal_name(av[1]);
+	if ((fractal_type == 1 && ac == 2) || (fractal_type == 2 && ac == 4))
 	{
 		fractal.name = av[1];
-		if (!ft_strncmp(av[1], "julia", 5))
+		if (fractal_type == 2)
 			init_julia(&fractal, av);
 		fractal_init(&fractal);
 		fractal_render(&fractal);
-		if (fractal.mlx_connection && fractal.mlx_window)
-			mlx_loop(fractal.mlx_connection);
+		mlx_loop(fractal.mlx_connection);
 	}
 	else
 	{
 		putstr_fd(ERROR_MESSAGE, STDERR_FILENO);
-		exit(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
 }
