@@ -126,4 +126,5 @@ int			mouse_handler(int button, int x, int y, t_fractal *fractal);
 double		atodbl(char *s);
 int			julia_track(int x, int y, t_fractal *fractal);
 int			ft_isdigit(char c);
+void		handle_pixel(int x, int y, t_fractal *fractal);
 #endif

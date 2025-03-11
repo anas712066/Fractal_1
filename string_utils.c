@@ -13,31 +13,17 @@
 #include "fractol.h"
 #include "minilibx-linux/mlx.h"
 
-/*int	ft_strncmp(char *s1, char *s2, int n)
-{
-	if (!s1 || !s2 || n <= 0)
-		return (0);
-	while (*s1 && *s2 && n > 0 && *s1 != '\0')
-	{
-		s1++;
-		s2++;
-		--n;
-	}
-	return (*s1 - *s2);
-}*/
-
-int	ft_isdigit(char	c)
+int	ft_isdigit(char c)
 {
 	return (c >= '0' && c <= '9');
 }
 
 int	ft_strncmp(char *s1, char *s2, int n)
 {
-	int i;
+	int	i;
 
 	if (!s1 || !s2 || n <= 0)
 		return (0);
-	
 	i = 0;
 	while (i < n && s1[i] && s2[i])
 	{
@@ -45,7 +31,6 @@ int	ft_strncmp(char *s1, char *s2, int n)
 			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 		i++;
 	}
-
 	if (i == n)
 		return (0);
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
@@ -63,8 +48,8 @@ static size_t	ft_strlen(char *str)
 
 void	putstr_fd(char *s, int fd)
 {
-	int ret;
-	
+	int	ret;
+
 	if (!s || fd < 0)
 		return ;
 	ret = write(fd, s, ft_strlen(s));
