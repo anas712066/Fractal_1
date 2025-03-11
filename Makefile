@@ -9,7 +9,8 @@ SRCS = main.c \
        render.c \
        string_utils.c \
        get_color.c \
-       events.c
+       events.c \
+       mouse_handler.c
 	   
 OBJS = $(SRCS:.c=.o)
 
